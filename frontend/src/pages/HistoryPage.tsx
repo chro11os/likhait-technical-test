@@ -129,9 +129,11 @@ const HistoryPage: React.FC = () => {
   const totalCount = categories.reduce((sum, cat) => sum + cat.count, 0);
 
   const pageStyle: React.CSSProperties = {
-    padding: "48px 64px",
+    padding: "32px 48px",
     minHeight: "100vh",
     background: COLORS.secondary.s01,
+    boxSizing: "border-box",
+    maxWidth: "100%",
   };
 
   const headerStyle: React.CSSProperties = {

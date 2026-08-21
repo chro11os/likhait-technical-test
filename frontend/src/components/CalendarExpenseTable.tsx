@@ -119,58 +119,60 @@ export function CalendarExpenseTable({
 
   return (
     <>
-      <table style={tableStyle}>
-        <thead style={theadStyle}>
-          <tr>
-            <th style={thStyle}>Date</th>
-            <th style={thStyle}>Description</th>
-            <th style={thStyle}>Category</th>
-            <th style={thStyle}>Amount</th>
-            <th style={{ ...thStyle, textAlign: "center" }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentExpenses.map((expense) => (
-            <tr key={expense.id}>
-              <td style={tdStyle}>{formatDate(new Date(expense.date))}</td>
-              <td style={tdStyle}>{expense.description}</td>
-              <td style={tdStyle}>
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <span>{getCategoryEmoji(expense.category)}</span>
-                  <span>{expense.category}</span>
-                </span>
-              </td>
-              <td style={{ ...tdStyle, textAlign: "left", fontWeight: 600 }}>
-                {formatCurrency(expense.amount)}
-              </td>
-              <td style={{ ...tdStyle, textAlign: "center" }}>
-                <div style={actionButtonsStyle}>
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    onClick={() => handleEdit(expense)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="small"
-                    onClick={() => handleDelete(expense)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </td>
+      <div style={{ width: "100%", overflowX: "auto" }}>
+        <table style={tableStyle}>
+          <thead style={theadStyle}>
+            <tr>
+              <th style={thStyle}>Date</th>
+              <th style={thStyle}>Description</th>
+              <th style={thStyle}>Category</th>
+              <th style={thStyle}>Amount</th>
+              <th style={{ ...thStyle, textAlign: "center" }}>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentExpenses.map((expense) => (
+              <tr key={expense.id}>
+                <td style={tdStyle}>{formatDate(new Date(expense.date))}</td>
+                <td style={tdStyle}>{expense.description}</td>
+                <td style={tdStyle}>
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <span>{getCategoryEmoji(expense.category)}</span>
+                    <span>{expense.category}</span>
+                  </span>
+                </td>
+                <td style={{ ...tdStyle, textAlign: "left", fontWeight: 600 }}>
+                  {formatCurrency(expense.amount)}
+                </td>
+                <td style={{ ...tdStyle, textAlign: "center" }}>
+                  <div style={actionButtonsStyle}>
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={() => handleEdit(expense)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="small"
+                      onClick={() => handleDelete(expense)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Pagination
         currentPage={currentPage}
