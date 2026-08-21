@@ -2,14 +2,16 @@
  * Form component for adding/editing expenses
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ExpenseFormData } from "../types";
 import { EXPENSE_CATEGORIES } from "../constants/categories";
+import { fetchCategories } from "../services/api";
 import { TextField, SelectBox, Button } from "../vibes";
 import { useExpenseForm } from "../hooks/useExpenseForm";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormData>;
+  categories?: Array<{ id: number; name: string }>;
   onSubmit: (data: ExpenseFormData) => Promise<void>;
   onCancel?: () => void;
   submitLabel?: string;
@@ -17,10 +19,25 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({
   initialData,
+  categories: initialCategories,
   onSubmit,
   onCancel,
   submitLabel = "Add Expense",
 }: ExpenseFormProps) {
+  const [categories, setCategories] = useState<string[]>(
+    initialCategories?.map((c) => c.name) || [...EXPENSE_CATEGORIES],
+  );
+
+  useEffect(() => {
+    if (initialCategories && initialCategories.length > 0) {
+      setCategories(initialCategories.map((c) => c.name));
+    } else {
+      fetchCategories()
+        .then((data) => setCategories(data.map((c) => c.name)))
+        .catch(() => setCategories([...EXPENSE_CATEGORIES]));
+    }
+  }, [initialCategories]);
+
   const { formData, errors, isSubmitting, handleChange, handleSubmit } =
     useExpenseForm({
       initialData,
@@ -39,7 +56,7 @@ export function ExpenseForm({
     marginTop: "0.5rem",
   };
 
-  const categoryOptions = EXPENSE_CATEGORIES.map((category) => ({
+  const categoryOptions = categories.map((category) => ({
     value: category,
     label: category,
   }));
