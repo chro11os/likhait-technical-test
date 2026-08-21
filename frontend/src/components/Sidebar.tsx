@@ -1,21 +1,64 @@
-import React from "react";
+import React, { useRef, useCallback } from "react";
 import { COLORS } from "../constants/colors";
 
 interface SidebarProps {
   onNavigate?: (page: string) => void;
   currentPage?: string;
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
+  width?: number;
+  onWidthChange?: (width: number) => void;
 }
+
+const MIN_WIDTH = 72;
+const MAX_WIDTH = 420;
+const COLLAPSE_THRESHOLD = 180;
 
 const Sidebar: React.FC<SidebarProps> = ({
   onNavigate,
   currentPage = "history",
-  isCollapsed = false,
-  onToggleCollapse,
+  width = 280,
+  onWidthChange,
 }) => {
+  const isDragging = useRef(false);
+  const isCollapsed = width < COLLAPSE_THRESHOLD;
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      isDragging.current = true;
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "col-resize";
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        if (!isDragging.current) return;
+        const newWidth = Math.min(
+          Math.max(moveEvent.clientX, MIN_WIDTH),
+          MAX_WIDTH,
+        );
+        onWidthChange?.(newWidth);
+      };
+
+      const handleMouseUp = () => {
+        isDragging.current = false;
+        document.body.style.userSelect = "";
+        document.body.style.cursor = "";
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    },
+    [onWidthChange],
+  );
+
+  const handleToggle = () => {
+    if (onWidthChange) {
+      onWidthChange(isCollapsed ? 280 : MIN_WIDTH);
+    }
+  };
+
   const sidebarStyle: React.CSSProperties = {
-    width: isCollapsed ? "80px" : "360px",
+    width: `${width}px`,
     height: "100vh",
     background: `linear-gradient(180deg, ${COLORS.primary.p01} 0%, ${COLORS.primary.p02} 100%)`,
     display: "flex",
@@ -24,32 +67,35 @@ const Sidebar: React.FC<SidebarProps> = ({
     position: "fixed",
     left: 0,
     top: 0,
-    transition: "width 0.1s ease",
+    zIndex: 20,
+    boxSizing: "border-box",
   };
 
   const headerStyle: React.CSSProperties = {
-    padding: "24px 16px",
+    padding: isCollapsed ? "24px 12px" : "24px 16px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: isCollapsed ? "center" : "space-between",
     borderBottom: `1px solid ${COLORS.secondary.s04}`,
   };
 
   const logoStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "12px",
+    overflow: "hidden",
   };
 
   const logoIconStyle: React.CSSProperties = {
-    width: "48px",
-    height: "48px",
+    width: "44px",
+    height: "44px",
+    minWidth: "44px",
     background: COLORS.primary.p07,
     borderRadius: "12px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "28px",
+    fontSize: "24px",
     fontWeight: "bold",
     color: "white",
   };
@@ -57,28 +103,29 @@ const Sidebar: React.FC<SidebarProps> = ({
   const logoTextStyle: React.CSSProperties = {
     display: isCollapsed ? "none" : "flex",
     flexDirection: "column",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
   };
 
   const logoTitleStyle: React.CSSProperties = {
-    fontSize: "24px",
+    fontSize: "20px",
     fontWeight: 700,
     color: COLORS.primary.p09,
     lineHeight: 1.2,
   };
 
   const toggleButtonStyle: React.CSSProperties = {
-    width: "40px",
-    height: "40px",
+    width: "36px",
+    height: "36px",
     background: "transparent",
     border: "none",
     borderRadius: "8px",
-    display: "flex",
+    display: isCollapsed ? "none" : "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-
     transition: "background 0.2s",
-    marginLeft: "16px",
+    flexShrink: 0,
   };
 
   const navStyle: React.CSSProperties = {
@@ -88,23 +135,35 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const navItemStyle: React.CSSProperties = {
     width: "100%",
-    padding: isCollapsed ? "16px" : "16px 24px",
+    padding: isCollapsed ? "16px" : "14px 20px",
     display: "flex",
     alignItems: "center",
     justifyContent: isCollapsed ? "center" : "flex-start",
-    gap: "16px",
+    gap: "14px",
     background: currentPage === "history" ? COLORS.primary.p03 : "transparent",
     border: "none",
     cursor: "pointer",
-    fontSize: "18px",
+    fontSize: "16px",
     fontWeight: 500,
     color: COLORS.primary.p09,
     textAlign: "left",
     transition: "background 0.2s",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
   };
 
   const navTextStyle: React.CSSProperties = {
     display: isCollapsed ? "none" : "inline",
+  };
+
+  const resizerStyle: React.CSSProperties = {
+    position: "absolute",
+    top: 0,
+    right: -4,
+    width: "8px",
+    height: "100%",
+    cursor: "col-resize",
+    zIndex: 30,
   };
 
   return (
@@ -119,11 +178,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         <button
           style={toggleButtonStyle}
           aria-label="Toggle sidebar"
-          onClick={onToggleCollapse}
+          onClick={handleToggle}
         >
           <svg
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="#464343"
@@ -142,6 +201,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <button
           style={navItemStyle}
           onClick={() => onNavigate?.("history")}
+          title={isCollapsed ? "History" : undefined}
           onMouseEnter={(e) => {
             if (currentPage !== "history") {
               e.currentTarget.style.background = COLORS.primary.p02;
@@ -160,6 +220,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            style={{ flexShrink: 0 }}
           >
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
@@ -169,6 +230,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           <span style={navTextStyle}>History</span>
         </button>
       </nav>
+
+      <div
+        style={resizerStyle}
+        onMouseDown={handleMouseDown}
+        onDoubleClick={handleToggle}
+        title="Drag to resize sidebar"
+      />
     </aside>
   );
 };
