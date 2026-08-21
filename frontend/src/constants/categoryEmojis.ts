@@ -1,4 +1,4 @@
-const DEFAULT_EMOJIS: Record<string, string> = {
+export const CATEGORY_EMOJIS: Record<string, string> = {
   Food: "🍔",
   Transportation: "🚗",
   Entertainment: "🎬",
@@ -10,6 +10,8 @@ const DEFAULT_EMOJIS: Record<string, string> = {
   Personal: "👤",
   Other: "📦",
 };
+
+const DEFAULT_EMOJIS = CATEGORY_EMOJIS;
 
 export const AVAILABLE_EMOJIS = [
   "🍔", "🚗", "🎬", "🛍️", "📄", "🏥", "📚", "✈️", "📦", "👤",
