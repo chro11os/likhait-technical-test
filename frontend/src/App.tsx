@@ -5,7 +5,7 @@ import { COLORS } from "./constants/colors";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("history");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
 
   const appStyle: React.CSSProperties = {
     display: "flex",
@@ -15,15 +15,10 @@ function App() {
 
   const mainStyle: React.CSSProperties = {
     flex: 1,
-    marginLeft: isSidebarCollapsed ? "80px" : "360px",
-    transition: "margin-left 0.3s ease",
-    maxWidth: isSidebarCollapsed ? "calc(100vw - 80px)" : "calc(100vw - 360px)",
+    marginLeft: `${sidebarWidth}px`,
+    maxWidth: `calc(100vw - ${sidebarWidth}px)`,
     overflowX: "hidden",
     boxSizing: "border-box",
-  };
-
-  const handleToggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
   return (
@@ -31,8 +26,8 @@ function App() {
       <Sidebar
         currentPage={currentPage}
         onNavigate={setCurrentPage}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={handleToggleSidebar}
+        width={sidebarWidth}
+        onWidthChange={setSidebarWidth}
       />
       <main style={mainStyle}>
         {currentPage === "history" && <HistoryPage />}
