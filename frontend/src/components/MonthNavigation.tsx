@@ -50,21 +50,20 @@ export function MonthNavigation({
   const wrapperStyle: React.CSSProperties = {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "12px",
     padding: "16px 0",
+    maxWidth: "100%",
   };
 
   const containerStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(12, 1fr)",
-    gap: "12px",
-    maxWidth: "900px",
-    marginRight: "32px",
+    gap: "8px",
     flex: 1,
   };
 
   const navigationButtonStyle: React.CSSProperties = {
-    padding: "12px 16px",
+    padding: "10px 14px",
     fontSize: "16px",
     fontWeight: 500,
     border: "none",
@@ -74,15 +73,16 @@ export function MonthNavigation({
     background: COLORS.primary.p05,
     color: "white",
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-    minWidth: "48px",
+    minWidth: "40px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   };
 
   const getMonthButtonStyle = (month: number): React.CSSProperties => ({
-    padding: "12px 20px",
-    fontSize: "16px",
+    padding: "10px 6px",
+    fontSize: "15px",
     fontWeight: 500,
     border: "none",
     borderRadius: "8px",
@@ -91,6 +91,7 @@ export function MonthNavigation({
     background: currentMonth === month ? COLORS.primary.p05 : "white",
     color: currentMonth === month ? "white" : COLORS.secondary.s08,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    textAlign: "center",
   });
 
   return (

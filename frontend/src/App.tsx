@@ -17,6 +17,9 @@ function App() {
     flex: 1,
     marginLeft: isSidebarCollapsed ? "80px" : "360px",
     transition: "margin-left 0.3s ease",
+    maxWidth: isSidebarCollapsed ? "calc(100vw - 80px)" : "calc(100vw - 360px)",
+    overflowX: "hidden",
+    boxSizing: "border-box",
   };
 
   const handleToggleSidebar = () => {
