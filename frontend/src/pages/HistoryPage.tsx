@@ -8,6 +8,7 @@ import { CalendarExpenseTable } from "../components/CalendarExpenseTable";
 import { ExpenseForm } from "../components/ExpenseForm";
 import { Modal, Button, TextField } from "../vibes";
 import { COLORS } from "../constants/colors";
+import { AVAILABLE_EMOJIS, saveCategoryEmoji } from "../constants/categoryEmojis";
 
 const HistoryPage: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -15,6 +16,7 @@ const HistoryPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState("📦");
   const [categoryError, setCategoryError] = useState("");
   const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
 
@@ -98,7 +100,9 @@ const HistoryPage: React.FC = () => {
       setIsSubmittingCategory(true);
       setCategoryError("");
       await createCategory(trimmed);
+      saveCategoryEmoji(trimmed, selectedEmoji);
       setNewCategoryName("");
+      setSelectedEmoji("📦");
       setIsCategoryModalOpen(false);
       fetchExpenses();
     } catch (error: any) {
@@ -232,6 +236,7 @@ const HistoryPage: React.FC = () => {
           setIsCategoryModalOpen(false);
           setCategoryError("");
           setNewCategoryName("");
+          setSelectedEmoji("📦");
         }}
         title="Add New Category"
       >
@@ -252,6 +257,53 @@ const HistoryPage: React.FC = () => {
             fullWidth
             required
           />
+
+          <div>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: COLORS.text.primary,
+              }}
+            >
+              Category Icon ({selectedEmoji})
+            </label>
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                flexWrap: "wrap",
+                maxHeight: "110px",
+                overflowY: "auto",
+                padding: "2px",
+              }}
+            >
+              {AVAILABLE_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => setSelectedEmoji(emoji)}
+                  style={{
+                    fontSize: "20px",
+                    padding: "6px 10px",
+                    borderRadius: "8px",
+                    border:
+                      selectedEmoji === emoji
+                        ? `2px solid ${COLORS.primary.p07}`
+                        : "1px solid #e5e7eb",
+                    background:
+                      selectedEmoji === emoji ? COLORS.primary.p01 : "white",
+                    cursor: "pointer",
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
             <Button
               type="submit"
@@ -268,6 +320,7 @@ const HistoryPage: React.FC = () => {
                 setIsCategoryModalOpen(false);
                 setCategoryError("");
                 setNewCategoryName("");
+                setSelectedEmoji("📦");
               }}
               disabled={isSubmittingCategory}
             >
